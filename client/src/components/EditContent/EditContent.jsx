@@ -7,14 +7,26 @@ const { v4: uuidv4 } = require("uuid");
 
 export default class EditContent extends React.Component {
   state = {
-    content: "",
-    
+    editContent: null,
+  };
+
+  fetchData() {
+    axios
+      .get(`${API_URL}/posts/${this.props.match.params.id}`)
+      .then((response) => {
+        this.setState({ editContent: response.data.content });
+      });
+  }
+
+  componentDidMount() {
+    this.fetchData();
   }
 
   render() {
+    console.log(this.state.editContent);
     return (
       <>
-        <p>blah blah</p>
+        <p>{this.state.editContent}</p>
       </>
     );
   }

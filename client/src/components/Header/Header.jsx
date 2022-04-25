@@ -1,11 +1,11 @@
 import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { ReactComponent as HeaderLogo } from "../../assets/icons/robot-logo.svg";
 import "./Header.scss";
 import HeaderButton from "./HeaderButton/HeaderButton";
 
 export default function Header() {
-  const navigate = useNavigate();
+  const history = useHistory();
   const location = useLocation();
   const { pathname } = location;
 
@@ -20,7 +20,7 @@ export default function Header() {
         <HeaderButton
           className={`${pathname === "/" ? "selected" : ""}`}
           onClick={() => {
-            navigate.push("/");
+            history.push("/");
           }}
         >
           Home
@@ -28,7 +28,7 @@ export default function Header() {
         <HeaderButton
           className={`${pathname === "/" ? "selected" : ""}`}
           onClick={() => {
-            navigate.push("/");
+            history.push("/");
           }}
         >
           Build

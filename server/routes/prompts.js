@@ -13,6 +13,7 @@ const {
   FieldValue,
 } = require("firebase-admin/firestore");
 
+// CREATE A NEW POST
 router.post("/generate", async (req, res) => {
   const { prompt } = req.body;
 
@@ -26,7 +27,8 @@ router.post("/generate", async (req, res) => {
   res.status(200).send(output);
 });
 
-router.post("/create/:id", async (req, res) => {
+// SEND THE POST TO DATABASE
+router.post("/create", async (req, res) => {
   const content = req.body.content;
   console.log("test test test");
   const id = uuidv4();
@@ -41,13 +43,20 @@ router.post("/create/:id", async (req, res) => {
   res.status(200).send("ok");
 });
 
-// GET the completed content for editing
-router.get("/posts/:id", (req, res) => {
+// GET THE POST FROM DATABASE TO CLIENT
+router.get("/:id", async (req, res) => {
   const { id } = req.params;
-  const docRef = await db.collection("posts").get(id);
-  res.status(200).send(docRef.content);
+  const docRef = db.collection("posts").doc(id);
+  const doc = await docRef.get();
+  if (!doc.exists) {
+    res.status(404).send("fail - not found");
+  } else {
+    res.status(200).send(doc.data());
+  }
 });
 
+
+// FIREBASE DATABASE
 const serviceAccount = require("/Users/ashleyj/src/brainstation/assignments/CAPSTONE/copybot-xyz-firebase-adminsdk-dhhc2-09454f3b8e.json");
 
 initializeApp({
