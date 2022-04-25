@@ -1,0 +1,39 @@
+@use "../../../partials/_variables" as *;
+@use "../../../partials/_mixin" as *;
+@use "../../../partials/_typography";
+
+.header__button {
+  background-color: $black;
+  color: $green;
+  border-radius: 20px;
+  border-style: solid;
+  border-color: $black;
+  width: 50%;
+  height: 2.5rem;
+
+  @include tablet {
+    width: 50%;
+    height: 2.5rem;
+  }
+
+  @include desktop {
+    width: 10.5rem;
+    height: 2.5rem;
+  }
+}
+.header__button:hover,
+.header__button:active {
+  background-color: $black;
+  border-color: $black;
+  color: $white;
+  cursor: pointer;
+
+  @include mobile {
+    height: 2.5rem;
+  }
+}
+
+
+.header__buttons .selected {
+  background: black;
+}

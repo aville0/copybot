@@ -1,0 +1,23 @@
+@use "../../partials/_typography" as *;
+@use "../../partials/_mixin" as *;
+@use "../../partials/_variables" as *;
+
+.header {
+    @include regular;
+    // background-color: $green;
+    border-bottom: 2px solid $light-black;
+}
+
+.hero {
+  display: flex;
+  gap: 20px;
+  &__logo {
+    cursor: pointer;
+    max-width: 40px;
+    max-height: 100%;
+  }
+  &__text {
+    font-size: 24pt;
+    color: $light-black;
+  }
+}

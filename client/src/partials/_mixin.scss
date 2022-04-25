@@ -1,39 +1,56 @@
-@font-face {
+@use "./variables" as *;
+@use "./typography";
+
+@mixin mobile {
+  @media (min-width: 0px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $tablet-breakpoint) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $desktop-breakpoint) {
+    @content;
+  }
+}
+
+@mixin regular {
   font-family: "OpenSans-Regular";
-  src: url("../assets/fonts/OpenSans-Regular.ttf");
   font-weight: 400;
   font-style: normal;
 }
-@font-face {
+
+@mixin light {
   font-family: "OpenSans-Light";
-  src: url("../assets/fonts/OpenSans-Light.ttf");
   font-weight: 300;
   font-style: normal;
 }
-@font-face {
+
+@mixin medium {
   font-family: "OpenSans-Medium";
-  src: url("../assets/fonts/OpenSans-Medium.ttf");
   font-weight: 500;
   font-style: normal;
 }
-@font-face {
+
+@mixin semibold {
   font-family: "OpenSans-SemiBold";
-  src: url("../assets/fonts/OpenSans-SemiBold.ttf");
   font-weight: 600;
   font-style: normal;
 }
-@font-face {
+
+@mixin bold {
   font-family: "OpenSans-Bold";
-  src: url("../assets/fonts/OpenSans-Bold.ttf");
   font-weight: 700;
   font-style: normal;
 }
-@font-face {
+
+@mixin extrabold {
   font-family: "OpenSans-ExtraBold";
-  src: url("../assets/fonts/OpenSans-ExtraBold.ttf");
   font-weight: 800;
   font-style: normal;
 }
-* {
-  font-family: "OpenSans-Regular";
-}/*# sourceMappingURL=App.css.map */

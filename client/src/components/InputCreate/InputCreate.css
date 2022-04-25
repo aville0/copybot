@@ -1,1 +1,7 @@
-/*# sourceMappingURL=InputCreate.css.map */
+:hover {
+  cursor: pointer;
+}
+
+.input__submit-disabled {
+  opacity: 50%;
+}/*# sourceMappingURL=InputCreate.css.map */

@@ -1,0 +1,9 @@
+:hover {
+    cursor: pointer;
+}
+
+.input__submit {
+  &-disabled {
+    opacity: 50%;
+  }
+}

@@ -1,0 +1,15 @@
+@use "../../partials/_typography" as *;
+@use "../../partials/_mixin" as *;
+@use "../../partials/_variables" as *;
+
+.footer {
+  border-top: 2px solid $light-black;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.column-left,
+.column-center,
+.column-center {
+  display: block;
+}
