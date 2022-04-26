@@ -1,4 +1,5 @@
 const express = require("express");
+const moment = require("moment");
 const router = express.Router();
 const fetchGPT3 = require("../lib/gpt3");
 const { v4: uuidv4 } = require("uuid");
@@ -32,7 +33,7 @@ router.post("/create", async (req, res) => {
   const content = req.body.content;
   console.log("test test test");
   const id = uuidv4();
-  const todaysDate = Date.now();
+  const todaysDate = moment().format("LL");
   const docRef = db.collection("posts").doc(id);
 
   await docRef.set({
@@ -40,6 +41,7 @@ router.post("/create", async (req, res) => {
     title: "on",
     createDate: todaysDate,
   });
+  console.log(docRef);
   res.status(200).send("ok");
 });
 
@@ -55,6 +57,22 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// POST A COMMENT TO THE FIREBASE DATABASE AS ANOTHER COLLECTION
+
+router.post("/create/:id/comments", async (req, res) => {
+  const comment = req.body.comments;
+  const author = req.body.author;
+  const { id } = req.params;
+  const todaysDate = moment().format("LL");
+
+  const docRef = db.collection("posts").doc(id).collection("comments");
+
+  await docRef.add({
+    comments: comment,
+    author: author,
+  });
+  res.status(200).send("ok");
+});
 
 // FIREBASE DATABASE
 const serviceAccount = require("/Users/ashleyj/src/brainstation/assignments/CAPSTONE/copybot-xyz-firebase-adminsdk-dhhc2-09454f3b8e.json");
