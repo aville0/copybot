@@ -45,7 +45,7 @@ router.post("/create", async (req, res) => {
   res.status(200).send("ok");
 });
 
-// GET THE POST FROM DATABASE TO CLIENT
+// GET THE POST AND COMMENTS FROM DATABASE TO CLIENT
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   const docRef = db.collection("posts").doc(id);
@@ -53,12 +53,19 @@ router.get("/:id", async (req, res) => {
   if (!doc.exists) {
     res.status(404).send("fail - not found");
   } else {
-    res.status(200).send(doc.data());
+    const post = doc.data();
+    const commentsRef = await docRef.collection("comments").get();
+    post.comments = commentsRef.docs.map((doc) => doc.data());
+    if (!commentsRef.exists) {
+      console.log("no comments");
+    } else {
+      console.log(commentsRef);
+    }
+    res.status(200).send(post);
   }
 });
 
 // POST A COMMENT TO THE FIREBASE DATABASE AS ANOTHER COLLECTION
-
 router.post("/create/:id/comments", async (req, res) => {
   const comment = req.body.comments;
   const author = req.body.author;
@@ -70,6 +77,7 @@ router.post("/create/:id/comments", async (req, res) => {
   await docRef.add({
     comments: comment,
     author: author,
+    date: todaysDate,
   });
   res.status(200).send("ok");
 });
