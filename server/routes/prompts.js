@@ -82,6 +82,22 @@ router.post("/create/:id/comments", async (req, res) => {
   res.status(200).send("ok");
 });
 
+// POST A REVIEW TO THE FIREBASE DATABASE AS ANOTHER COLLECTION
+router.post("/:id/review", async (req, res) => {
+  const { id } = req.params;
+  const reviewer = req.body.reviewer;
+  const review = req.body.review;
+
+  const reviewRef = db.collection("posts").doc(id).collection("reviews");
+
+  await reviewRef.add({
+    review: review,
+    // TO DO - fix this to be the name of the author
+    author: "reviewer",
+  });
+  res.status(200).send("ok");
+});
+
 // FIREBASE DATABASE
 const serviceAccount = require("/Users/ashleyj/src/brainstation/assignments/CAPSTONE/copybot-xyz-firebase-adminsdk-dhhc2-09454f3b8e.json");
 

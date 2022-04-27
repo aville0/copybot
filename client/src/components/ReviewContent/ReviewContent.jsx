@@ -11,7 +11,9 @@ export default class EditContent extends React.Component {
     editedContent: null,
     createDate: null,
     comments: null,
-    author: null,
+    reviewer: null,
+    review: null,
+    check: false,
   };
 
   // GET THE COMMENTS FROM FIREBASE SERVER
@@ -30,7 +32,28 @@ export default class EditContent extends React.Component {
 
   // POST THE RESPONSE TO CONTENT (CHECKBOX, SIGNATURE & COMMENTS)
 
-  
+  onReviewClickHandler = async (e) => {
+    await axios
+      .post(`${API_URL}/posts/${this.props.match.params.id}/review`, {
+        review: this.state.review,
+        reviewer: this.state.reviewer,
+      })
+      .then((response) => {
+        window.alert("your review has been submitted");
+      })
+      .catch((err) => console.log(err));
+  };
+
+  componentDidMount() {
+    this.getDataComments();
+  }
+
+  onReviewEventHandler = async (e) => {
+    this.setState((prevState) => ({
+      check: !prevState.check,
+    })).catch((err) => console.error(err));
+  };
+
   render() {
     return (
       <>
@@ -53,14 +76,20 @@ export default class EditContent extends React.Component {
           }}
         >
           <TextField
-            label="Add a comment for the reviewer here"
+            label="Your name"
             variant="outlined"
-            onChange={this.state.comments}
+            onChange={this.state.reviewer}
           />
         </Box>
-        <Checkbox checked={checked} onChange={handleChange} {...label} />
-        <Button onClick={this.onSomething} variant="contained">
-          Return to Drafter
+        <Checkbox
+          checked={checked}
+          onChange={(e) =>
+            this.setState({ check: !this.componentDidCatch.value })
+          }
+          {...label}
+        />
+        <Button onClick={this.onReviewClickHandler} variant="contained">
+          Done
         </Button>
       </>
     );
