@@ -4,6 +4,7 @@ import InputCreate from "./components/InputCreate/InputCreate";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import EditContent from "./components/EditContent/EditContent";
+import ReviewContent from "./components/ReviewContent/ReviewContent";
 
 import "./App.scss";
 
@@ -18,6 +19,10 @@ export default class App extends Component {
             exact
             path="/create"
             render={(routerProps) => <InputCreate {...routerProps} />}
+          />
+          <Route
+            path="/posts/:id/review"
+            render={(routerProps) => <ReviewContent {...routerProps} />}
           />
           <Route
             path="/posts/:id"

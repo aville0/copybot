@@ -34,6 +34,7 @@ export default class EditContent extends React.Component {
       })
       .then((response) => {
         window.alert("submitted");
+        this.props.history.goBack();
       })
       .catch((err) => console.log(err));
   };
@@ -52,6 +53,7 @@ export default class EditContent extends React.Component {
     return (
       <>
         <h2>Edit Content </h2>
+        <h3>Results</h3>
         <Box
           component="form"
           sx={{
@@ -59,8 +61,11 @@ export default class EditContent extends React.Component {
           }}
         >
           <TextField
-          // value={this.state.editContent}
-          // onChange={this.state.editedContent}
+            id="outlined-multiline-static"
+            multiline
+            rows={5}
+            value={this.state.editContent}
+            onChange={this.state.editedContent}
           />
         </Box>
         <Box

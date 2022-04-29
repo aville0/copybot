@@ -12,7 +12,12 @@ export default function Header() {
   return (
     <div className="header">
       <div className="hero">
-        <HeaderLogo className="hero__logo" />
+        <HeaderLogo
+          className="hero__logo"
+          onClick={() => {
+            history.push("/");
+          }}
+        />
         <h1 className="hero__text">CopyBot.xyz</h1>
       </div>
       <div className="header__left"></div>

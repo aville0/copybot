@@ -2,41 +2,38 @@ import "./ReviewContent.scss";
 import React from "react";
 import axios from "axios";
 import { API_URL } from "../../utils/utils";
-import { TextField, Box, Button, Snackbar } from "@mui/material";
-const { v4: uuidv4 } = require("uuid");
+import { TextField, Box, Button, Checkbox } from "@mui/material";
 
 export default class EditContent extends React.Component {
   state = {
-    title: null,
-    editedContent: null,
-    createDate: null,
-    comments: null,
-    reviewer: null,
-    review: null,
-    check: false,
+    post: {
+      content: "",
+      title: "",
+    },
+    comments: [],
+    reviewerName: null,
+    reviewerApproved: false,
   };
 
   // GET THE COMMENTS FROM FIREBASE SERVER
   getDataComments() {
     axios
-      .get(`{API_URL}/posts/create/${this.props.match.params.id}`)
+      .get(`${API_URL}/posts/${this.props.match.params.id}`)
       .then((response) => {
         this.setState({
-          title: response.data.title,
-          editedContent: response.data.content,
+          post: { title: response.data.title, content: response.data.content },
           comments: response.data.comments,
-          createDate: response.data.createDate,
         });
       });
   }
 
-  // POST THE RESPONSE TO CONTENT (CHECKBOX, SIGNATURE & COMMENTS)
+  // POST THE RESPONSE TO CONTENT (CHECKBOX, SIGNATURE)
 
   onReviewClickHandler = async (e) => {
     await axios
       .post(`${API_URL}/posts/${this.props.match.params.id}/review`, {
-        review: this.state.review,
-        reviewer: this.state.reviewer,
+        reviewerApproved: this.state.reviewerApproved,
+        reviewerName: this.state.reviewerName,
       })
       .then((response) => {
         window.alert("your review has been submitted");
@@ -44,16 +41,19 @@ export default class EditContent extends React.Component {
       .catch((err) => console.log(err));
   };
 
+  onReviewCheckHandler = async (e) => {
+    this.setState((prevState) => ({
+      reviewerApproved: !prevState.reviewerApproved,
+    }));
+  };
+
+  onReviewNameHandler = (e) => {
+    this.setState({ reviewerName: e.target.value });
+  };
+
   componentDidMount() {
     this.getDataComments();
   }
-
-  onReviewEventHandler = async (e) => {
-    this.setState((prevState) => ({
-      check: !prevState.check,
-    })).catch((err) => console.error(err));
-  };
-
   render() {
     return (
       <>
@@ -64,10 +64,18 @@ export default class EditContent extends React.Component {
             "& > :not(style)": { m: 1, width: "100ch" },
           }}
         >
-          <TextField
-          // value={this.state.editContent}
-          // onChange={this.state.editedContent}
-          />
+          <TextField value={this.state.post.content} disabled={true} />
+        </Box>
+        <Box
+          component="form"
+          sx={{
+            "& > :not(style)": { m: 1, width: "100ch" },
+          }}
+        >
+          {/* TODO: Rename comment.comments to comment.message in FS */}
+          {this.state.comments.map((c, idx) => (
+            <p key={idx}>{c.comments}</p>
+          ))}
         </Box>
         <Box
           component="form"
@@ -78,16 +86,10 @@ export default class EditContent extends React.Component {
           <TextField
             label="Your name"
             variant="outlined"
-            onChange={this.state.reviewer}
+            onChange={this.onReviewNameHandler}
           />
         </Box>
-        <Checkbox
-          checked={checked}
-          onChange={(e) =>
-            this.setState({ check: !this.componentDidCatch.value })
-          }
-          {...label}
-        />
+        <Checkbox onChange={this.onReviewCheckHandler} />
         <Button onClick={this.onReviewClickHandler} variant="contained">
           Done
         </Button>

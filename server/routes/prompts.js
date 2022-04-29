@@ -50,17 +50,13 @@ router.get("/:id", async (req, res) => {
   const { id } = req.params;
   const docRef = db.collection("posts").doc(id);
   const doc = await docRef.get();
+  console.log(id, doc.data())
   if (!doc.exists) {
     res.status(404).send("fail - not found");
   } else {
     const post = doc.data();
     const commentsRef = await docRef.collection("comments").get();
     post.comments = commentsRef.docs.map((doc) => doc.data());
-    if (!commentsRef.exists) {
-      console.log("no comments");
-    } else {
-      console.log(commentsRef);
-    }
     res.status(200).send(post);
   }
 });
@@ -85,16 +81,10 @@ router.post("/create/:id/comments", async (req, res) => {
 // POST A REVIEW TO THE FIREBASE DATABASE AS ANOTHER COLLECTION
 router.post("/:id/review", async (req, res) => {
   const { id } = req.params;
-  const reviewer = req.body.reviewer;
-  const review = req.body.review;
-
+  const approved = req.body.reviewerApproved;
+  const name = req.body.reviewerName;
   const reviewRef = db.collection("posts").doc(id).collection("reviews");
-
-  await reviewRef.add({
-    review: review,
-    // TO DO - fix this to be the name of the author
-    author: "reviewer",
-  });
+  await reviewRef.add({ approved: approved, author: name });
   res.status(200).send("ok");
 });
 
