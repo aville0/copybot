@@ -2,13 +2,12 @@ import "./EditContent.scss";
 import React from "react";
 import axios from "axios";
 import { API_URL } from "../../utils/utils";
-import { TextField, Box, Button, Snackbar } from "@mui/material";
+import { TextField, Box, Button, Snackbar, Link } from "@mui/material";
 const { v4: uuidv4 } = require("uuid");
 
 export default class EditContent extends React.Component {
   state = {
     editContent: null,
-    editedContent: null,
     comments: null,
     author: null,
   };
@@ -18,9 +17,9 @@ export default class EditContent extends React.Component {
     axios
       .get(`${API_URL}/posts/${this.props.match.params.id}`)
       .then((response) => {
+        console.log(response.data);
         this.setState({
           editContent: response.data.content,
-          comments: response.data.comments,
         });
       });
   }
@@ -28,14 +27,15 @@ export default class EditContent extends React.Component {
   // TO POST A COMMENT TO THE DATABASE
   onCommentClickHandler = async (e) => {
     await axios
-      .post(`${API_URL}/posts/create/${this.props.match.params.id}/comments`, {
+      .post(`${API_URL}/posts/${this.props.match.params.id}/comments`, {
         comments: this.state.comments,
         author: this.state.author,
       })
       .then((response) => {
-        window.alert("submitted");
-        this.props.history.goBack();
-      })
+        this.props.history.push(
+          `/posts/${this.props.match.params.id}/review`
+        );
+      }, 2000)
       .catch((err) => console.log(err));
   };
 
@@ -44,8 +44,9 @@ export default class EditContent extends React.Component {
   }
 
   onEditEventHandler = async (e) => {
+    // TODO Update server
     this.setState({
-      editedContent: e.response.data.content,
+      editContent: e.target.value,
     }).catch((err) => console.error(err));
   };
 
@@ -64,8 +65,8 @@ export default class EditContent extends React.Component {
             id="outlined-multiline-static"
             multiline
             rows={5}
-            value={this.state.editContent}
-            onChange={this.state.editedContent}
+            defaultValue={this.state.editContent}
+            onChange={this.onEditEventHandler}
           />
         </Box>
         <Box
@@ -84,7 +85,15 @@ export default class EditContent extends React.Component {
           Send for Review
         </Button>
         <p>OR</p>
-        <Button variant="contained">Share on Social Media</Button>
+        <Button
+          component={Link}
+          variant="contained"
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+            this.state.editContent
+          )}`}
+        >
+          Share to Twitter
+        </Button>
       </>
     );
   }

@@ -31,7 +31,6 @@ router.post("/generate", async (req, res) => {
 // SEND THE POST TO DATABASE
 router.post("/create", async (req, res) => {
   const content = req.body.content;
-  console.log("test test test");
   const id = uuidv4();
   const todaysDate = moment().format("LL");
   const docRef = db.collection("posts").doc(id);
@@ -42,7 +41,7 @@ router.post("/create", async (req, res) => {
     createDate: todaysDate,
   });
   console.log(docRef);
-  res.status(200).send("ok");
+  res.status(200).send({postId: id});
 });
 
 // GET THE POST AND COMMENTS FROM DATABASE TO CLIENT
@@ -50,7 +49,7 @@ router.get("/:id", async (req, res) => {
   const { id } = req.params;
   const docRef = db.collection("posts").doc(id);
   const doc = await docRef.get();
-  console.log(id, doc.data())
+  console.log(id, doc.data());
   if (!doc.exists) {
     res.status(404).send("fail - not found");
   } else {
@@ -62,7 +61,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // POST A COMMENT TO THE FIREBASE DATABASE AS ANOTHER COLLECTION
-router.post("/create/:id/comments", async (req, res) => {
+router.post("/:id/comments", async (req, res) => {
   const comment = req.body.comments;
   const author = req.body.author;
   const { id } = req.params;
@@ -96,5 +95,6 @@ initializeApp({
 });
 
 const db = getFirestore();
+
 
 module.exports = router;

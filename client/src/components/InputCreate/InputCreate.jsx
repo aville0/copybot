@@ -6,6 +6,8 @@ import { API_URL } from "../../utils/utils";
 import { TextField, Box, Button, Snackbar, Slide, Alert } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import Refresh from "@mui/icons-material/Refresh";
 
 export default class InputCreate extends React.Component {
   state = {
@@ -13,6 +15,7 @@ export default class InputCreate extends React.Component {
     result: null,
     loading: false,
     textToCopy: false,
+    postId: [],
   };
 
   onFillHandler = (e) => {
@@ -42,10 +45,7 @@ export default class InputCreate extends React.Component {
     await axios
       .post(`${API_URL}/posts/create`, { content: this.state.result })
       .then((response) => {
-        window.alert("submitted");
-        this.props.history.push(
-          `$(API_URL)//posts/create/${this.props.match.params.id}/comments`
-        );
+        this.props.history.push(`posts/${response.data.postId}/edit`);
       }, 2000)
       .catch((err) => console.log(err));
   };
@@ -97,11 +97,6 @@ export default class InputCreate extends React.Component {
               "& > :not(style)": { m: 1, width: "100ch" },
             }}
           >
-            <ContentCopyIcon
-              onClick={() => {
-                navigator.clipboard.writeText(this.state.result.textToCopy);
-              }}
-            />
             <TextField
               id="outlined-multiline-static"
               multiline
@@ -109,6 +104,14 @@ export default class InputCreate extends React.Component {
               value={this.state.result}
               disabled={true}
             />
+            <div>
+              <ContentCopyIcon
+                onClick={() => {
+                  navigator.clipboard.writeText(this.state.result.textToCopy);
+                }}
+              />
+              <RefreshIcon />
+            </div>
             <p>
               If you're happy with the results, press submit to start editing.
               Otherwise, run it again.

@@ -1,44 +1,42 @@
 import React from "react";
-import { useHistory, useLocation } from "react-router-dom";
-import { ReactComponent as HeaderLogo } from "../../assets/icons/robot-logo.svg";
-import "./Header.scss";
-import HeaderButton from "./HeaderButton/HeaderButton";
+import { useHistory } from "react-router-dom";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 
 export default function Header() {
   const history = useHistory();
-  const location = useLocation();
-  const { pathname } = location;
 
   return (
-    <div className="header">
-      <div className="hero">
-        <HeaderLogo
-          className="hero__logo"
-          onClick={() => {
-            history.push("/");
-          }}
-        />
-        <h1 className="hero__text">CopyBot.xyz</h1>
-      </div>
-      <div className="header__left"></div>
-      <div className="header__right">
-        <HeaderButton
-          className={`${pathname === "/" ? "selected" : ""}`}
-          onClick={() => {
-            history.push("/");
-          }}
-        >
-          Home
-        </HeaderButton>
-        <HeaderButton
-          className={`${pathname === "/" ? "selected" : ""}`}
-          onClick={() => {
-            history.push("/");
-          }}
-        >
-          Build
-        </HeaderButton>
-      </div>
-    </div>
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Copybot
+          </Typography>
+
+          <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "row-reverse" }}>
+            <Button
+              sx={{ my: 2, color: "white", display: "block" }}
+              onClick={() => {
+                history.push("/home");
+              }}
+            >
+              Home
+            </Button>
+            <Button
+              sx={{ my: 2, color: "white", display: "block" }}
+              onClick={() => {
+                history.push("/create");
+              }}
+            >
+              Build
+            </Button>
+          </Box>
+        </Toolbar>
+      </AppBar>
+    </Box>
   );
 }

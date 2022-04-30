@@ -37,7 +37,8 @@ export default class EditContent extends React.Component {
       })
       .then((response) => {
         window.alert("your review has been submitted");
-      })
+        this.props.history.push(`/`);
+      }, 2000)
       .catch((err) => console.log(err));
   };
 
@@ -64,7 +65,13 @@ export default class EditContent extends React.Component {
             "& > :not(style)": { m: 1, width: "100ch" },
           }}
         >
-          <TextField value={this.state.post.content} disabled={true} />
+          <TextField
+            id="outlined-multiline-static"
+            multiline
+            rows={5}
+            value={this.state.post.content}
+            disabled={true}
+          />
         </Box>
         <Box
           component="form"
