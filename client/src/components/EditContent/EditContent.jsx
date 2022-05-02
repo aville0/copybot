@@ -3,6 +3,7 @@ import React from "react";
 import axios from "axios";
 import { API_URL } from "../../utils/utils";
 import { TextField, Box, Button, Snackbar, Link } from "@mui/material";
+import TwitterIcon from "@mui/icons-material/Twitter";
 const { v4: uuidv4 } = require("uuid");
 
 export default class EditContent extends React.Component {
@@ -91,6 +92,7 @@ export default class EditContent extends React.Component {
           href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
             this.state.editContent
           )}`}
+          endIcon={<TwitterIcon />}
         >
           Share to Twitter
         </Button>

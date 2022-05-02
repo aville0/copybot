@@ -33,7 +33,7 @@ const footers = [
     description: ["How it works", "Future development"],
   },
   {
-    title: "Reach out",
+    title: "Connect with Us",
     description: ["Facebook", "Twitter", "Instagram", "Github"],
   },
 ];
