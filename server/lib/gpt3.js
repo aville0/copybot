@@ -9,14 +9,15 @@ async function fetchGPT3({ prompt, model = "text-davinci-002" }) {
   const openai = new OpenAIApi(configuration);
   const response = await openai.createCompletion(model, {
     prompt: prompt,
-    temperature: 0.7,
-    max_tokens: 64,
+    temperature: 0.9,
+    max_tokens: 100,
     top_p: 1.0,
+    n: 3,
     frequency_penalty: 0.0,
     presence_penalty: 0.0,
   });
 
-  return response.data.choices[0].text;
+  return response.data;  
 }
 
 module.exports = fetchGPT3;

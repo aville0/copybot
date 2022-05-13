@@ -11,45 +11,61 @@ export default class EditContent extends React.Component {
     editContent: null,
     comments: null,
     author: null,
+    content: null,
+    reviews: [],
   };
 
-  // GET THE CONTENT FROM GPT-3
+  // GET THE CONTENT FROM SERVER
   fetchData() {
     axios
       .get(`${API_URL}/posts/${this.props.match.params.id}`)
       .then((response) => {
-        console.log(response.data);
         this.setState({
           editContent: response.data.content,
+          reviews: response.data.reviews,
         });
       });
   }
 
-  // TO POST A COMMENT TO THE DATABASE
-  onCommentClickHandler = async (e) => {
-    await axios
+  // EDIT THE CONTENT IN THE TEXT FIELD
+  onEditEventHandler = async (e) => {
+    this.setState({
+      editContent: e.target.value,
+    }).catch((err) => console.error(err));
+  };
+
+  // ADD A COMMENT FOR THE REVIEWER
+  onEditCommentHandler = async (e) => {
+    this.setState({
+      comments: e.target.value,
+    }).catch((err) => console.error(err));
+  };
+
+  // SEND THE EDITED CONTENT TO THE REVIEWER
+  onSubmitClickHandler = async (e) => {
+    axios
+      .post(`${API_URL}/posts/${this.props.match.params.id}/edit`, {
+        content: this.state.editContent,
+      })
+      .then((response) => {
+        this.props.history.push(`/posts/${this.props.match.params.id}/review`);
+      }, 2000)
+      .catch((err) => console.log(err));
+  };
+
+  // SEND THE COMMENT TO THE REVIEWER WITH YOUR NAME
+  onSubmitCommentClickHandler = async (e) => {
+    axios
       .post(`${API_URL}/posts/${this.props.match.params.id}/comments`, {
         comments: this.state.comments,
         author: this.state.author,
       })
-      .then((response) => {
-        this.props.history.push(
-          `/posts/${this.props.match.params.id}/review`
-        );
-      }, 2000)
       .catch((err) => console.log(err));
   };
 
   componentDidMount() {
     this.fetchData();
   }
-
-  onEditEventHandler = async (e) => {
-    // TODO Update server
-    this.setState({
-      editContent: e.target.value,
-    }).catch((err) => console.error(err));
-  };
 
   render() {
     return (
@@ -70,6 +86,9 @@ export default class EditContent extends React.Component {
             onChange={this.onEditEventHandler}
           />
         </Box>
+        <Button onClick={this.onSubmitClickHandler} variant="contained">
+          Send for Review
+        </Button>
         <Box
           component="form"
           sx={{
@@ -79,12 +98,13 @@ export default class EditContent extends React.Component {
           <TextField
             label="Add a comment for the reviewer here"
             variant="outlined"
-            onChange={this.state.comments}
+            onChange={this.onEditCommentHandler}
           />
         </Box>
-        <Button onClick={this.onCommentClickHandler} variant="contained">
-          Send for Review
+        <Button onClick={this.onSubmitCommentClickHandler} variant="contained">
+          Add Comment
         </Button>
+
         <p>OR</p>
         <Button
           component={Link}
@@ -94,8 +114,19 @@ export default class EditContent extends React.Component {
           )}`}
           endIcon={<TwitterIcon />}
         >
-          Share to Twitter
+          Tweet it now!
         </Button>
+
+        <section className="review-response">
+          <p>{this.state.comments}</p>
+          <p>{this.state.author}</p>
+
+          {this.state.reviews.map((r, idx) => (
+            <p key={idx}>
+              {r.author} has {r.approved ? "approved" : "rejected"} on {r.date}.
+            </p>
+          ))}
+        </section>
       </>
     );
   }

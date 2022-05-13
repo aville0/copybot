@@ -23,6 +23,7 @@ export default class EditContent extends React.Component {
         this.setState({
           post: { title: response.data.title, content: response.data.content },
           comments: response.data.comments,
+          content: response.data.content
         });
       });
   }

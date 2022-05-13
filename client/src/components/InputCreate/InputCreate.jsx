@@ -12,7 +12,9 @@ import Refresh from "@mui/icons-material/Refresh";
 export default class InputCreate extends React.Component {
   state = {
     prompt: null,
-    result: null,
+    result1: null,
+    result2: null,
+    result3: null,
     loading: false,
     textToCopy: false,
     postId: [],
@@ -30,7 +32,9 @@ export default class InputCreate extends React.Component {
       .post(`${API_URL}/posts/generate`, { prompt: this.state.prompt })
       .then((response) =>
         this.setState({
-          result: response.data,
+          result1: response.data.choices[0].text,
+          result2: response.data.choices[1].text,
+          result3: response.data.choices[2].text,
           loading: false,
         })
       )
@@ -40,10 +44,10 @@ export default class InputCreate extends React.Component {
       });
   };
 
-  onSubmitClickHandler = async (e) => {
+  onSubmitClickHandler = async (result, e) => {
     e.preventDefault();
     await axios
-      .post(`${API_URL}/posts/create`, { content: this.state.result })
+      .post(`${API_URL}/posts/create`, { content: result })
       .then((response) => {
         this.props.history.push(`posts/${response.data.postId}/edit`);
       }, 2000)
@@ -87,6 +91,7 @@ export default class InputCreate extends React.Component {
           >
             Done
           </LoadingButton>
+          <RefreshIcon />
         </section>
 
         <section>
@@ -101,25 +106,103 @@ export default class InputCreate extends React.Component {
               id="outlined-multiline-static"
               multiline
               rows={5}
-              value={this.state.result}
+              value={this.state.result1}
               disabled={true}
             />
-            <div>
+            <div className="copy-button">
               <ContentCopyIcon
                 onClick={() => {
-                  navigator.clipboard.writeText(this.state.result.textToCopy);
+                  navigator.clipboard.writeText(this.state.result1);
                 }}
               />
-              <RefreshIcon />
+              <Button
+                onClick={(e) =>
+                  this.onSubmitClickHandler(this.state.result1, e)
+                }
+                variant="contained"
+              >
+                Edit
+              </Button>
+              <Snackbar
+                open={this.state.open}
+                TransitionComponent={TransitionDown}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              >
+                <Alert severity="success" sx={{ width: "100%" }}>
+                  Great! You will be redirected in 2 seconds
+                </Alert>
+              </Snackbar>
+            </div>
+            <TextField
+              id="outlined-multiline-static"
+              multiline
+              rows={5}
+              value={this.state.result2}
+              disabled={true}
+            />
+            <div className="copy-button">
+              <ContentCopyIcon
+                onClick={() => {
+                  navigator.clipboard.writeText(this.state.result2);
+                }}
+              />
+              <Button
+                onClick={(e) =>
+                  this.onSubmitClickHandler(this.state.result2, e)
+                }
+                variant="contained"
+              >
+                Edit
+              </Button>
+              <Snackbar
+                open={this.state.open}
+                TransitionComponent={TransitionDown}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              >
+                <Alert severity="success" sx={{ width: "100%" }}>
+                  Great! You will be redirected in 2 seconds
+                </Alert>
+              </Snackbar>
+            </div>
+            <TextField
+              id="outlined-multiline-static"
+              multiline
+              rows={5}
+              value={this.state.result3}
+              disabled={true}
+            />
+            <div className="copy-button">
+              <ContentCopyIcon
+                onClick={() => {
+                  navigator.clipboard.writeText(this.state.result3);
+                }}
+              />
+              <Button
+                onClick={(e) =>
+                  this.onSubmitClickHandler(this.state.result3, e)
+                }
+                variant="contained"
+              >
+                Edit
+              </Button>
+              <Snackbar
+                open={this.state.open}
+                TransitionComponent={TransitionDown}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              >
+                <Alert severity="success" sx={{ width: "100%" }}>
+                  Great! You will be redirected in 2 seconds
+                </Alert>
+              </Snackbar>
             </div>
             <p>
-              If you're happy with the results, press submit to start editing.
-              Otherwise, run it again.
+              If you're happy with the results, select which one you'd like to
+              start editing. Otherwise, run it again.
             </p>
-            <Button onClick={this.onSubmitClickHandler} variant="contained">
+            {/* <Button onClick={this.onSubmitClickHandler} variant="contained">
               Submit
-            </Button>
-            <Snackbar
+            </Button> */}
+            {/* <Snackbar
               open={this.state.open}
               TransitionComponent={TransitionDown}
               anchorOrigin={{ vertical: "top", horizontal: "center" }}
@@ -127,7 +210,7 @@ export default class InputCreate extends React.Component {
               <Alert severity="success" sx={{ width: "100%" }}>
                 Great! You will be redirected in 2 seconds
               </Alert>
-            </Snackbar>
+            </Snackbar> */}
           </Box>
         </section>
       </>

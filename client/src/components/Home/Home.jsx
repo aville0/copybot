@@ -116,6 +116,16 @@ export default function SignInSide() {
               >
                 Sign In
               </Button>
+
+              <Button
+                type="submit"
+                fullwidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign in with Google or Twitter
+              </Button>
+
               <Grid container>
                 <Grid item xs>
                   <Link href="#" variant="body2">
