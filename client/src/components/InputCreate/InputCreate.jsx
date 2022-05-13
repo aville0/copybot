@@ -15,6 +15,9 @@ export default class InputCreate extends React.Component {
     result1: null,
     result2: null,
     result3: null,
+    result4: null,
+    result5: null,
+    result6: null,
     loading: false,
     textToCopy: false,
     postId: [],
@@ -35,6 +38,9 @@ export default class InputCreate extends React.Component {
           result1: response.data.choices[0].text,
           result2: response.data.choices[1].text,
           result3: response.data.choices[2].text,
+          result4: response.data.choices[3].text,
+          result5: response.data.choices[4].text,
+          result6: response.data.choices[5].text,
           loading: false,
         })
       )
@@ -199,18 +205,7 @@ export default class InputCreate extends React.Component {
               If you're happy with the results, select which one you'd like to
               start editing. Otherwise, run it again.
             </p>
-            {/* <Button onClick={this.onSubmitClickHandler} variant="contained">
-              Submit
-            </Button> */}
-            {/* <Snackbar
-              open={this.state.open}
-              TransitionComponent={TransitionDown}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            >
-              <Alert severity="success" sx={{ width: "100%" }}>
-                Great! You will be redirected in 2 seconds
-              </Alert>
-            </Snackbar> */}
+            
           </Box>
         </section>
       </>

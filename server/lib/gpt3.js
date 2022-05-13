@@ -12,7 +12,7 @@ async function fetchGPT3({ prompt, model = "text-davinci-002" }) {
     temperature: 0.9,
     max_tokens: 100,
     top_p: 1.0,
-    n: 3,
+    n: 6,
     frequency_penalty: 0.0,
     presence_penalty: 0.0,
   });
