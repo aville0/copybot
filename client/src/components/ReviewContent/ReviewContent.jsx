@@ -44,9 +44,7 @@ export default class ReviewContent extends React.Component {
   }
 
   onReviewClickHandler = (e) => {
-    if (!this.state.reviewerApproved || this.state.reviewerName == "") {
-      return
-    }
+    if (this.state.reviewerName === "") return
 
     this.setState({ showAlert: true });
     axios

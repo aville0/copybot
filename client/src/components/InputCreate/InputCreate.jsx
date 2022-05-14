@@ -3,7 +3,14 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import React from "react";
 import axios from "axios";
 import { API_URL } from "../../utils/utils";
-import { TextField, Container, Box, Grid, Button, Typography } from "@mui/material";
+import {
+  TextField,
+  Container,
+  Box,
+  Grid,
+  Button,
+  Typography,
+} from "@mui/material";
 
 export default class InputCreate extends React.Component {
   state = {
@@ -18,9 +25,9 @@ export default class InputCreate extends React.Component {
     });
   };
 
-  onGenerateClickHandler = async (e) => {
+  onGenerateClickHandler = (e) => {
     this.setState({ loading: true });
-    await axios
+    axios
       .post(`${API_URL}/posts/generate`, { prompt: this.state.prompt })
       .then((response) =>
         this.setState({
@@ -34,16 +41,6 @@ export default class InputCreate extends React.Component {
       });
   };
 
-  onSubmitClickHandler = async (result, e) => {
-    e.preventDefault();
-    await axios
-      .post(`${API_URL}/posts/create`, { content: result })
-      .then((response) => {
-        this.props.history.push(`posts/${response.data.postId}/edit`);
-      }, 2000)
-      .catch((err) => console.log(err));
-  };
-
   render() {
     return (
       <React.Fragment>
@@ -51,9 +48,13 @@ export default class InputCreate extends React.Component {
           display="flex"
           flexDirection="column"
           flex="1 auto"
-          style={{ height: "calc(100% - 60px - 30px)", width: "100%" }}
+          style={{
+            height: "calc(100% - 60px - 30px)",
+            width: "100%",
+            overflowY: "scroll",
+          }}
         >
-          <Container style={{paddingTop: "16px"}}>
+          <Container style={{ paddingTop: "16px" }}>
             <Typography variant="h6">Create Post</Typography>
             <Box textAlign="right">
               <TextField
@@ -82,24 +83,36 @@ export default class InputCreate extends React.Component {
             </Box>
           </Container>
 
-          <Container>
-            <Grid container spacing={2}>
-              {this.state.results.map((r, idx) => (
-                <Grid item xs={12} key={idx}>
-                  <ResultBox text={r} />
-                </Grid>
-              ))}
-            </Grid>
-          </Container>
+          {this.state.results.length > 0 && (
+            <Container style={{ paddingBottom: "16px" }}>
+              <Typography variant="h6">Results</Typography>
+              <Grid container spacing={2}>
+                {this.state.results.map((r, idx) => (
+                  <Grid item xs={12} key={idx}>
+                    <ResultBox text={r} history={this.props.history} />
+                  </Grid>
+                ))}
+              </Grid>
+            </Container>
+          )}
         </Box>
       </React.Fragment>
     );
   }
 }
 
-function ResultBox({ text }) {
+function ResultBox({ text, history }) {
+  const onSubmitClickHandler = (result) => {
+    axios
+      .post(`${API_URL}/posts/create`, { content: result })
+      .then((response) => {
+        history.push(`posts/${response.data.postId}/edit`);
+      }, 2000)
+      .catch((err) => console.log(err));
+  };
+
   return (
-    <Box display="flex" textAlign="right">
+    <Box style={{ width: "100%", textAlign: "right" }}>
       <TextField
         multiline
         fullWidth
@@ -107,12 +120,8 @@ function ResultBox({ text }) {
         rows={5}
         value={text}
         disabled={true}
-        marginRight="8px"
       />
-      <Button
-        onClick={(e) => this.onSubmitClickHandler(text, e)}
-        variant="contained"
-      >
+      <Button onClick={(e) => onSubmitClickHandler(text)} variant="contained">
         Edit
       </Button>
     </Box>

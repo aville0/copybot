@@ -13,15 +13,22 @@ export default function Header() {
   return (
     <AppBar position="static" elevation={0}>
       <Toolbar>
-        <div className="hero__logo">
+        <Typography
+          variant="h6"
+          component="div"
+          style={{
+            cursor: "pointer",
+          }}
+          sx={{ flexGrow: 1 }}
+          onClick={() => {
+            history.push("/");
+          }}
+        >
           <RobotLogo
-            onClick={() => {
-              history.push("/");
-            }}
+            width="24px"
+            style={{ marginRight: "16px", verticalAlign: "text-bottom" }}
           />
-        </div>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          copybot
+          copybot.xyz
         </Typography>
 
         <Box

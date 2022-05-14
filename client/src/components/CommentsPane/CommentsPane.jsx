@@ -94,17 +94,20 @@ export function Comment({ name, comment, date }) {
 
 export function AddComment({ postID, onCommentAdded }) {
   const [comment, setComment] = useState("");
+  const [name, setName] = useState("");
 
-  const onEditCommentHandler = async (e) => {
+  const onEditCommentHandler = (e) => {
     setComment(e.target.value);
   };
 
-  const onSubmitCommentClickHandler = async (e) => {
+  const onSubmitCommentClickHandler = (e) => {
+    if (name === "") return;
+
     const data = {
       comments: comment,
       date: new Date().toDateString(),
       // TODO: Use the signed in account name
-      author: "Ashley",
+      author: name,
     };
     onCommentAdded(data);
     axios
@@ -113,24 +116,41 @@ export function AddComment({ postID, onCommentAdded }) {
     setComment("");
   };
 
+  const onEditNameHandler = (e) => {
+    setName(e.target.value);
+  };
+
   return (
     <Box
       borderTop={`1px solid ${grey[400]}`}
-      padding="0px 16px 16px 16px"
+      padding="16px 16px 16px 16px"
       width="100%"
       textAlign="right"
     >
       <TextField
+        label="Full Name"
+        variant="outlined"
+        value={name}
+        fullWidth={true}
+        size="small"
+        onChange={onEditNameHandler}
+      />
+      <TextField
         label="Write a comment to your team..."
         variant="outlined"
+        style={{ marginTop: "8px" }}
         value={comment}
         fullWidth={true}
-        margin="normal"
+        size="small"
         multiline={true}
         rows={3}
         onChange={onEditCommentHandler}
       />
-      <Button onClick={onSubmitCommentClickHandler} variant="contained">
+      <Button
+        onClick={onSubmitCommentClickHandler}
+        variant="contained"
+        style={{ marginTop: "8px" }}
+      >
         Add Comment
       </Button>
     </Box>
