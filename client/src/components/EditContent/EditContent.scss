@@ -1,0 +1,12 @@
+@use "../../partials/_typography" as *;
+@use "../../partials/_mixin" as *;
+@use "../../partials/_variables" as *;
+
+
+.page-header, .page-subheader {
+    padding: 10px;
+}
+
+.page-content {
+    display: flex;
+}

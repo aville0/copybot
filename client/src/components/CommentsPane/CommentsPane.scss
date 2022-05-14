@@ -1,0 +1,12 @@
+@use "../../partials/_typography" as *;
+@use "../../partials/_mixin" as *;
+@use "../../partials/_variables" as *;
+
+.page_subheader {
+    padding: 10px;
+}
+
+.comment-feed {
+    border: 2px solid black;
+    padding: 40px;
+}

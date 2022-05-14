@@ -34,6 +34,14 @@
   font-weight: 800;
   font-style: normal;
 }
-* {
-  font-family: "OpenSans-Regular";
-}/*# sourceMappingURL=App.css.map */
+.footer {
+  border-top: 2px solid #1F2421;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.column-left,
+.column-center,
+.column-center {
+  display: block;
+}/*# sourceMappingURL=Footer.css.map */
