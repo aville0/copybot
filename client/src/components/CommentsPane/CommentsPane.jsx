@@ -1,73 +1,131 @@
 import "./CommentsPane.scss";
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { API_URL } from "../../utils/utils";
-import { TextField, Box, Button, Snackbar } from "@mui/material";
-const { v4: uuidv4 } = require("uuid");
+import {
+  Box,
+  List,
+  Divider,
+  ListItem,
+  ListItemText,
+  Typography,
+  TextField,
+  Button,
+} from "@mui/material";
+
+import { grey } from "@mui/material/colors";
 
 export default class CommentsPane extends React.Component {
-  state = {
-    comments: null,
-    author: null,
-    reviews: [],
-  };
-
-  // GET THE REVIEWS FROM SERVER
-  fetchReview() {
-    axios
-      .get(`${API_URL}/posts/${this.props.match.params.id}`)
-      .then((response) => {
-        this.setState({
-          reviews: response.data.reviews,
-        });
-      });
+  render() {
+    return (
+      <Box
+        flexDirection={"column"}
+        display="flex"
+        height="100%"
+        borderLeft={`1px solid ${grey[400]}`}
+      >
+        <List
+          sx={{
+            width: "100%",
+            maxWidth: 360,
+            bgcolor: "background.paper",
+            flex: "1 auto",
+            overflowY: "scroll",
+            height: "100%"
+          }}
+        >
+          {this.props.comments.map((c) => {
+            return (
+              <>
+                <Comment name={c.author} comment={c.comments} date={c.date} />
+                <Divider component="li" />
+              </>
+            );
+          })}
+        </List>
+        <AddComment postID={this.props.postID} />
+      </Box>
+    );
   }
+}
 
-  // ADD A COMMENT FOR THE REVIEWER
-  onEditCommentHandler = async (e) => {
-    this.setState({
-      comments: e.target.value,
-    }).catch((err) => console.error(err));
+export function Comment({ name, comment, date }) {
+  return (
+    <ListItem alignItems="flex-start">
+      <ListItemText
+        primary={
+          <React.Fragment>
+            <Typography
+              sx={{ display: "inline" }}
+              component="span"
+              variant="body2"
+              color="text.primary"
+            >
+              {name}
+            </Typography>
+            <Typography
+              sx={{ display: "inline" }}
+              component="span"
+              variant="body2"
+              color="text.secondary"
+            >
+              {" — "}
+              {comment}
+            </Typography>
+          </React.Fragment>
+        }
+        secondary={
+          <Typography
+            sx={{ display: "inline" }}
+            component="span"
+            variant="caption"
+            color="text.secondary"
+          >
+            {date.toString()}
+          </Typography>
+        }
+      />
+    </ListItem>
+  );
+}
+
+export function AddComment({ postID }) {
+  const [comment, setComment] = useState("");
+
+  const onEditCommentHandler = async (e) => {
+    setComment(e.target.value);
   };
 
-  // SEND THE COMMENT TO THE REVIEWER WITH YOUR NAME
-  onSubmitCommentClickHandler = async (e) => {
+  const onSubmitCommentClickHandler = async (e) => {
     axios
-      .post(`${API_URL}/posts/${this.props.match.params.id}/comments`, {
-        comments: this.state.comments,
-        author: this.state.author,
+      .post(`${API_URL}/posts/${postID}/comments`, {
+        comments: comment,
+        // TODO: Use the signed in account name
+        author: "Ashley",
       })
       .catch((err) => console.log(err));
   };
 
-  componentDidMount() {
-    this.fetchReview();
-  }
-
-  render() {
-    return (
-      <>
-        <h3 className="page-subheader">Send a comment for the reviewer</h3>
-        <TextField
-          label="Add a comment for the reviewer here"
-          variant="outlined"
-          onChange={this.onEditCommentHandler}
-        />
-        <Button onClick={this.onSubmitCommentClickHandler} variant="contained">
-          Add Comment
-        </Button>
-
-        <section className="review-response">
-          <p>{this.state.comments}</p>
-          <p>{this.state.author}</p>
-
-          {this.state.reviews.map((r, idx) => (
-            <p key={idx}>
-              {r.author} has {r.approved ? "approved" : "rejected"} on {r.date}.
-            </p>
-          ))}
-        </section>
-      </>
-    );
-  }
+  return (
+    <Box
+      borderTop={`1px solid ${grey[400]}`}
+      padding="0px 16px 16px 16px"
+      width="100%"
+      textAlign="right"
+    >
+      <TextField
+        label="Add a comment for the reviewer here"
+        variant="outlined"
+        value={comment}
+        fullWidth={true}
+        margin="normal"
+        multiline={true}
+        rows={3}
+        onChange={onEditCommentHandler}
+      />
+      <Button onClick={onSubmitCommentClickHandler} variant="contained">
+        Add Comment
+      </Button>
+    </Box>
+  );
 }

@@ -11,14 +11,14 @@ export default function Header() {
   const history = useHistory();
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+    <Box>
+      <AppBar position="static" elevation={0}>
         <Toolbar>
           <div className="hero__logo">
-          <RobotLogo />
+            <RobotLogo />
           </div>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Copybot
+            copybot
           </Typography>
 
           <Box
