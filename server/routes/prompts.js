@@ -1,30 +1,15 @@
 const express = require("express");
-const moment = require("moment");
 const router = express.Router();
 const fetchGPT3 = require("../lib/gpt3");
 const { v4: uuidv4 } = require("uuid");
-const {
-  initializeApp,
-  applicationDefault,
-  cert,
-} = require("firebase-admin/app");
-const {
-  getFirestore,
-  Timestamp,
-  FieldValue,
-} = require("firebase-admin/firestore");
+const { initializeApp, cert } = require("firebase-admin/app");
+const { getFirestore, Timestamp } = require("firebase-admin/firestore");
 
 // CREATE A NEW POST
 router.post("/generate", async (req, res) => {
   const { prompt } = req.body;
-
   const tldrPrompt = `${prompt}\n\nTl;dr`;
-  console.log(tldrPrompt);
-
   const output = await fetchGPT3({ prompt: tldrPrompt });
-  console.log("---");
-  console.log(output);
-
   res.status(200).send(output);
 });
 
@@ -32,15 +17,12 @@ router.post("/generate", async (req, res) => {
 router.post("/create", async (req, res) => {
   const content = req.body.content;
   const id = uuidv4();
-  const todaysDate = moment().format("LL");
   const docRef = db.collection("posts").doc(id);
-
   await docRef.set({
     content: content,
     title: "on",
-    createDate: todaysDate,
+    createDate: Timestamp.fromDate(new Date()),
   });
-  console.log(docRef);
   res.status(200).send({ postId: id });
 });
 
@@ -49,15 +31,19 @@ router.get("/:id", async (req, res) => {
   const { id } = req.params;
   const docRef = db.collection("posts").doc(id);
   const doc = await docRef.get();
-  // console.log(id, doc.data());
   if (!doc.exists) {
     res.status(404).send("fail - not found");
   } else {
     const post = doc.data();
-    const commentsRef = await docRef.collection("comments").get();
+    const commentsRef = await docRef
+      .collection("comments")
+      .orderBy("date", "asc")
+      .get();
     const reviewsRef = await docRef.collection("reviews").get();
     post.comments = commentsRef.docs.map((doc) => doc.data());
+    post.comments.forEach(c => c.date = c.date.toDate().toDateString())
     post.reviews = reviewsRef.docs.map((doc) => doc.data());
+    post.reviews.forEach((r) => (r.date = r.date.toDate().toDateString()));
     res.status(200).send(post);
   }
 });
@@ -67,12 +53,11 @@ router.post("/:id/comments", async (req, res) => {
   const { id } = req.params;
   const comment = req.body.comments;
   const author = req.body.author;
-  const todaysDate = moment().format("LL");
   const commentsRef = db.collection("posts").doc(id).collection("comments");
   await commentsRef.add({
     comments: comment,
     author: author,
-    date: todaysDate,
+    date: Timestamp.fromDate(new Date()),
   });
   res.status(200).send("ok");
 });
@@ -91,13 +76,12 @@ router.post("/:id/review", async (req, res) => {
   const { id } = req.params;
   const approved = req.body.reviewerApproved;
   const name = req.body.reviewerName;
-  const todaysDate = moment().format("LL");
   const reviewRef = db.collection("posts").doc(id).collection("reviews");
   await reviewRef.add({
     reviews: approved,
     approved: approved,
     author: name,
-    date: todaysDate,
+    date: Timestamp.fromDate(new Date()),
   });
   res.status(200).send("ok");
 });

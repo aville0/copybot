@@ -87,7 +87,7 @@ export default function SignInSide() {
               <TextField
                 margin="normal"
                 required
-                fullWidth
+                fullWidth={true}
                 id="email"
                 label="Email Address"
                 name="email"
@@ -97,7 +97,7 @@ export default function SignInSide() {
               <TextField
                 margin="normal"
                 required
-                fullWidth
+                fullWidth={true}
                 name="password"
                 label="Password"
                 type="password"
@@ -110,7 +110,7 @@ export default function SignInSide() {
               />
               <Button
                 type="submit"
-                fullWidth
+                fullWidth={true}
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
@@ -119,7 +119,7 @@ export default function SignInSide() {
 
               <Button
                 type="submit"
-                fullwidth
+                fullWidth={true}
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >

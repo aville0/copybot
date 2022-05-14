@@ -10,7 +10,10 @@ import {
   ButtonGroup,
   Grid,
   List,
+  Alert,
+  IconButton,
   ListItemButton,
+  Collapse,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -18,6 +21,8 @@ import {
   Typography,
 } from "@mui/material";
 import TwitterIcon from "@mui/icons-material/Twitter";
+import ShareIcon from "@mui/icons-material/Share";
+import CloseIcon from "@mui/icons-material/Close";
 
 export default class EditContent extends React.Component {
   state = {
@@ -25,6 +30,7 @@ export default class EditContent extends React.Component {
     content: null,
     reviews: [],
     comments: [],
+    showShareAlert: false,
   };
 
   fetchData() {
@@ -39,22 +45,26 @@ export default class EditContent extends React.Component {
       });
   }
 
-  onEditEventHandler = async (e) => {
+  onEditEventHandler(e) {
     this.setState({
       editContent: e.target.value,
-    }).catch((err) => console.error(err));
-  };
+    });
+  }
 
-  onSubmitClickHandler = async (e) => {
+  onSubmitClickHandler(e) {
+    this.setState({ showShareAlert: true });
     axios
       .post(`${API_URL}/posts/${this.props.match.params.id}/edit`, {
         content: this.state.editContent,
       })
-      .then((response) => {
-        this.props.history.push(`/posts/${this.props.match.params.id}/review`);
-      }, 2000)
       .catch((err) => console.log(err));
-  };
+
+    const url = new URL(
+      `posts/${this.props.match.params.id}/review`,
+      window.location.origin
+    ).href;
+    navigator.clipboard.writeText(url);
+  }
 
   componentDidMount() {
     this.fetchData();
@@ -62,51 +72,101 @@ export default class EditContent extends React.Component {
 
   render() {
     return (
-      <Box display="flex" flex="1 auto">
-        <Grid container spacing={2}>
-          <Grid item xs={8} style={{ paddingLeft: "32px", paddingTop: "32px" }}>
-            <Typography variant="h6">Edit Post</Typography>
+      <React.Fragment>
+        <Collapse in={this.state.showShareAlert}>
+          <Alert
+            style={{
+              marginBottom: "4px",
+            }}
+            severity="info"
+            iconMapping={{
+              info: <ShareIcon fontSize="inherit" />,
+            }}
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  this.setState({ showShareAlert: false });
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            sx={{ mb: 2 }}
+          >
+            Link copied to clipboard!
+          </Alert>
+        </Collapse>
+        <Box
+          display="flex"
+          flex="1 auto"
+          style={{ height: "calc(100% - 60px - 30px)" }}
+        >
+          <Grid container spacing={2}>
+            <Grid
+              item
+              xs={8}
+              style={{ paddingLeft: "32px", paddingTop: "32px" }}
+            >
+              <Typography variant="h6">Edit Post</Typography>
 
-            <Box textAlign="right">
-              <TextField
-                fullWidth={true}
-                margin="normal"
-                id="outlined-multiline-static"
-                multiline
-                rows={5}
-                defaultValue={this.state.editContent}
-                onChange={this.onEditEventHandler}
+              <Box textAlign="right">
+                <TextField
+                  fullWidth={true}
+                  margin="normal"
+                  style={{ marginBottom: "16px" }}
+                  multiline
+                  rows={5}
+                  defaultValue={this.state.editContent}
+                  onChange={this.onEditEventHandler.bind(this)}
+                />
+                <ButtonGroup variant="contained">
+                  <Button
+                    onClick={() => {
+                      const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                        this.state.editContent
+                      )}`;
+                      window.location.href = url;
+                    }}
+                    endIcon={<TwitterIcon />}
+                  >
+                    Share to Twitter
+                  </Button>
+                  <Button
+                    onClick={this.onSubmitClickHandler.bind(this)}
+                    endIcon={<ShareIcon />}
+                  >
+                    Share with Team
+                  </Button>
+                </ButtonGroup>
+              </Box>
+              <Box marginTop={"32px"}>
+                <Typography variant="h6">Approvals</Typography>
+                {this.state.reviews.length > 0 ? (
+                  <ApprovalList reviews={this.state.reviews} />
+                ) : (
+                  <Typography color="text.secondary" marginTop={"8px"}>
+                    No reviews yet...
+                  </Typography>
+                )}
+              </Box>
+            </Grid>
+            <Grid item xs={4} height="100%">
+              <CommentsPane
+                comments={this.state.comments}
+                postID={this.props.match.params.id}
+                onCommentAdded={(comment) => {
+                  this.setState((state) => ({
+                    comments: state.comments.concat([comment]),
+                  }));
+                }}
               />
-              <ButtonGroup variant="contained">
-                <Button
-                  onChange={() => {
-                    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                      this.state.editContent
-                    )}`;
-                    this.props.history.push(url);
-                  }}
-                  endIcon={<TwitterIcon />}
-                >
-                  Share to Twitter
-                </Button>
-                <Button onClick={this.onSubmitClickHandler}>
-                  Send for Review
-                </Button>
-              </ButtonGroup>
-            </Box>
-            <Box marginTop={"32px"}>
-              <Typography variant="h6">Approvals</Typography>
-              <ApprovalList reviews={this.state.reviews} />
-            </Box>
+            </Grid>
           </Grid>
-          <Grid item xs={4}>
-            <CommentsPane
-              comments={this.state.comments}
-              postID={this.props.match.params.id}
-            />
-          </Grid>
-        </Grid>
-      </Box>
+        </Box>
+      </React.Fragment>
     );
   }
 }
@@ -118,12 +178,8 @@ function ApprovalList({ reviews }) {
         return (
           <ListItem key={idx} disablePadding>
             <ListItemButton role={undefined} dense disableRipple>
-              <ListItemIcon sx={{minWidth: "40px"}}>
-                <Checkbox
-                  disabled
-                  checked={r.approved}
-                  edge="start"
-                />
+              <ListItemIcon sx={{ minWidth: "40px" }}>
+                <Checkbox disabled checked={r.approved} edge="start" />
               </ListItemIcon>
               <ListItemText
                 primary={

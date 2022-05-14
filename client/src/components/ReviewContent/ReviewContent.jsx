@@ -1,49 +1,63 @@
 import "./ReviewContent.scss";
 import React from "react";
 import axios from "axios";
+import CommentsPane from "../CommentsPane/CommentsPane";
 import { API_URL } from "../../utils/utils";
-import { TextField, Box, Button, Checkbox } from "@mui/material";
+import {
+  TextField,
+  Grid,
+  Typography,
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Collapse,
+  Alert,
+  IconButton
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
-export default class EditContent extends React.Component {
+export default class ReviewContent extends React.Component {
   state = {
+    showAlert: false,
     post: {
       content: "",
       title: "",
     },
     comments: [],
-    reviewerName: null,
+
+    // Your name and if you approved
+    reviewerName: "",
     reviewerApproved: false,
   };
 
-  // GET THE COMMENTS FROM FIREBASE SERVER
-  getDataComments() {
+  fetchPost() {
     axios
       .get(`${API_URL}/posts/${this.props.match.params.id}`)
       .then((response) => {
         this.setState({
           post: { title: response.data.title, content: response.data.content },
           comments: response.data.comments,
-          content: response.data.content
+          content: response.data.content,
         });
       });
   }
 
-  // POST THE RESPONSE TO CONTENT (CHECKBOX, SIGNATURE)
+  onReviewClickHandler = (e) => {
+    if (!this.state.reviewerApproved || this.state.reviewerName == "") {
+      return
+    }
 
-  onReviewClickHandler = async (e) => {
-    await axios
+    this.setState({ showAlert: true });
+    axios
       .post(`${API_URL}/posts/${this.props.match.params.id}/review`, {
         reviewerApproved: this.state.reviewerApproved,
         reviewerName: this.state.reviewerName,
       })
-      .then((response) => {
-        window.alert("your review has been submitted");
-        this.props.history.push(`/`);
-      }, 2000)
       .catch((err) => console.log(err));
   };
 
-  onReviewCheckHandler = async (e) => {
+  onReviewCheckHandler = (e) => {
     this.setState((prevState) => ({
       reviewerApproved: !prevState.reviewerApproved,
     }));
@@ -54,54 +68,98 @@ export default class EditContent extends React.Component {
   };
 
   componentDidMount() {
-    this.getDataComments();
+    this.fetchPost();
   }
+
   render() {
     return (
-      <>
-        <h2>Review Content</h2>
+      <React.Fragment>
+        <Collapse in={this.state.showAlert}>
+          <Alert
+            style={{
+              marginBottom: "4px",
+            }}
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  this.setState({ showAlert: false });
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            sx={{ mb: 2 }}
+          >
+            Review submitted!
+          </Alert>
+        </Collapse>
         <Box
-          component="form"
-          sx={{
-            "& > :not(style)": { m: 1, width: "100ch" },
-          }}
+          display="flex"
+          flex="1 auto"
+          style={{ height: "calc(100% - 60px - 30px)" }}
         >
-          <TextField
-            id="outlined-multiline-static"
-            multiline
-            rows={5}
-            value={this.state.post.content}
-            disabled={true}
-          />
+          <Grid container spacing={2}>
+            <Grid
+              item
+              xs={8}
+              style={{ paddingLeft: "32px", paddingTop: "32px" }}
+            >
+              <Typography variant="h6">Review Post</Typography>
+              <Box textAlign="right">
+                <TextField
+                  fullWidth={true}
+                  margin="normal"
+                  multiline
+                  rows={5}
+                  disabled={true}
+                  value={this.state.post.content}
+                />
+              </Box>
+
+              <Box marginTop={"32px"}>
+                <Typography variant="h6">Your Review</Typography>
+                <Box>
+                  <FormControlLabel
+                    value="approved"
+                    control={<Checkbox onChange={this.onReviewCheckHandler} />}
+                    label="Approve"
+                    labelPlacement="start"
+                  />
+                </Box>
+                <Grid container={true}>
+                  <TextField
+                    value={this.state.reviewerName}
+                    label="Your name"
+                    size="small"
+                    style={{ marginRight: "8px" }}
+                    onChange={this.onReviewNameHandler}
+                  />
+                  <Button
+                    onClick={this.onReviewClickHandler}
+                    variant="contained"
+                  >
+                    Submit
+                  </Button>
+                </Grid>
+              </Box>
+            </Grid>
+            <Grid item xs={4} height="100%">
+              <CommentsPane
+                comments={this.state.comments}
+                postID={this.props.match.params.id}
+                onCommentAdded={(comment) => {
+                  this.setState((state) => ({
+                    comments: state.comments.concat([comment]),
+                  }));
+                }}
+              />
+            </Grid>
+          </Grid>
         </Box>
-        <Box
-          component="form"
-          sx={{
-            "& > :not(style)": { m: 1, width: "100ch" },
-          }}
-        >
-          {/* TODO: Rename comment.comments to comment.message in FS */}
-          {this.state.comments.map((c, idx) => (
-            <p key={idx}>{c.comments}</p>
-          ))}
-        </Box>
-        <Box
-          component="form"
-          sx={{
-            "& > :not(style)": { m: 1, width: "100ch" },
-          }}
-        >
-          <TextField
-            label="Your name"
-            variant="outlined"
-            onChange={this.onReviewNameHandler}
-          />
-        </Box>
-        <Checkbox onChange={this.onReviewCheckHandler} />
-        <Button onClick={this.onReviewClickHandler} variant="contained">
-          Done
-        </Button>
-      </>
+      </React.Fragment>
     );
   }
 }

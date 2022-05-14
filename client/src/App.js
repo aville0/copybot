@@ -30,7 +30,7 @@ function RouterApp() {
         <Switch>
           <Route
             exact
-            path="/home"
+            path="/"
             render={(routerProps) => <Home {...routerProps} />}
           />
           <Route
@@ -45,7 +45,7 @@ function RouterApp() {
             path="/posts/:id/edit"
             render={(routerProps) => <EditContent {...routerProps} />}
           />
-          <Redirect exact from="*" to="/home" />
+          <Redirect exact from="*" to="/" />
         </Switch>
         <Footer />
       </Box>

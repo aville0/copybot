@@ -11,38 +11,32 @@ export default function Header() {
   const history = useHistory();
 
   return (
-    <Box>
-      <AppBar position="static" elevation={0}>
-        <Toolbar>
-          <div className="hero__logo">
-            <RobotLogo />
-          </div>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            copybot
-          </Typography>
+    <AppBar position="static" elevation={0}>
+      <Toolbar>
+        <div className="hero__logo">
+          <RobotLogo
+            onClick={() => {
+              history.push("/");
+            }}
+          />
+        </div>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          copybot
+        </Typography>
 
-          <Box
-            sx={{ flexGrow: 1, display: "flex", flexDirection: "row-reverse" }}
+        <Box
+          sx={{ flexGrow: 1, display: "flex", flexDirection: "row-reverse" }}
+        >
+          <Button
+            color="inherit"
+            onClick={() => {
+              history.push("/create");
+            }}
           >
-            <Button
-              sx={{ my: 2, color: "white", display: "block" }}
-              onClick={() => {
-                history.push("/home");
-              }}
-            >
-              Home
-            </Button>
-            <Button
-              sx={{ my: 2, color: "white", display: "block" }}
-              onClick={() => {
-                history.push("/create");
-              }}
-            >
-              Build
-            </Button>
-          </Box>
-        </Toolbar>
-      </AppBar>
-    </Box>
+            Create
+          </Button>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 }

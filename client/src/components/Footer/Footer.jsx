@@ -5,7 +5,7 @@ import { Divider } from "@mui/material";
 
 export default function Footer() {
   return (
-    <Container disableGutters={true}>
+    <Container disableGutters={true} style={{height: "30px"}}>
       <Divider orientation="horizontal" />
       <Typography variant="caption" color="text.secondary" marginLeft={"16px"}>
         {"Made with ❤️ in Toronto"}

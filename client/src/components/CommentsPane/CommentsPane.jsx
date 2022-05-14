@@ -1,5 +1,5 @@
 import "./CommentsPane.scss";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../../utils/utils";
 import {
@@ -15,38 +15,41 @@ import {
 
 import { grey } from "@mui/material/colors";
 
-export default class CommentsPane extends React.Component {
-  render() {
-    return (
-      <Box
-        flexDirection={"column"}
-        display="flex"
-        height="100%"
-        borderLeft={`1px solid ${grey[400]}`}
+export default function CommentsPane(props) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current === null) return;
+    ref.current.scrollTop = ref.current.scrollHeight;
+  }, [props.comments.length]);
+  return (
+    <Box
+      flexDirection={"column"}
+      display="flex"
+      height="100%"
+      borderLeft={`1px solid ${grey[400]}`}
+    >
+      <List
+        ref={ref}
+        sx={{
+          width: "100%",
+          maxWidth: 360,
+          flex: "1 auto",
+          overflowY: "scroll",
+          height: "100%",
+        }}
       >
-        <List
-          sx={{
-            width: "100%",
-            maxWidth: 360,
-            bgcolor: "background.paper",
-            flex: "1 auto",
-            overflowY: "scroll",
-            height: "100%"
-          }}
-        >
-          {this.props.comments.map((c) => {
-            return (
-              <>
-                <Comment name={c.author} comment={c.comments} date={c.date} />
-                <Divider component="li" />
-              </>
-            );
-          })}
-        </List>
-        <AddComment postID={this.props.postID} />
-      </Box>
-    );
-  }
+        {props.comments.map((c, idx) => {
+          return (
+            <React.Fragment key={idx}>
+              <Comment name={c.author} comment={c.comments} date={c.date} />
+              {idx < props.comments.length - 1 && <Divider component="li" />}
+            </React.Fragment>
+          );
+        })}
+      </List>
+      <AddComment postID={props.postID} onCommentAdded={props.onCommentAdded} />
+    </Box>
+  );
 }
 
 export function Comment({ name, comment, date }) {
@@ -81,7 +84,7 @@ export function Comment({ name, comment, date }) {
             variant="caption"
             color="text.secondary"
           >
-            {date.toString()}
+            {date}
           </Typography>
         }
       />
@@ -89,7 +92,7 @@ export function Comment({ name, comment, date }) {
   );
 }
 
-export function AddComment({ postID }) {
+export function AddComment({ postID, onCommentAdded }) {
   const [comment, setComment] = useState("");
 
   const onEditCommentHandler = async (e) => {
@@ -97,13 +100,17 @@ export function AddComment({ postID }) {
   };
 
   const onSubmitCommentClickHandler = async (e) => {
+    const data = {
+      comments: comment,
+      date: new Date().toDateString(),
+      // TODO: Use the signed in account name
+      author: "Ashley",
+    };
+    onCommentAdded(data);
     axios
-      .post(`${API_URL}/posts/${postID}/comments`, {
-        comments: comment,
-        // TODO: Use the signed in account name
-        author: "Ashley",
-      })
+      .post(`${API_URL}/posts/${postID}/comments`, data)
       .catch((err) => console.log(err));
+    setComment("");
   };
 
   return (
@@ -114,7 +121,7 @@ export function AddComment({ postID }) {
       textAlign="right"
     >
       <TextField
-        label="Add a comment for the reviewer here"
+        label="Write a comment to your team..."
         variant="outlined"
         value={comment}
         fullWidth={true}
